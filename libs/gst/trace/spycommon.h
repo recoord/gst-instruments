@@ -29,7 +29,7 @@ GstClockTime       current_monotonic_time        (void);
 
 GstPad *           get_source_pad                (GstPad      *pad);
 
-gpointer           trace_heir                    (GstElement  *element);
+GstPipeline*       trace_heir                    (GstElement  *element);
 
 void               dump_hierarchy_info_if_needed (GstTrace    *trace,
                                                   GstPipeline *pipeline,

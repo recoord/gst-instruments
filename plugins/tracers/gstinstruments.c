@@ -68,11 +68,14 @@ do_push_buffer_pre (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, 
   optional_init ();
   
   GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
-  if (GST_IS_GHOST_PAD (receiver_pad))
+  if (receiver_pad == NULL || GST_IS_GHOST_PAD (receiver_pad))
     return;
   receiver_pad = get_source_pad (receiver_pad);
   
   sender_pad = get_source_pad (sender_pad);
+  if (sender_pad == NULL || receiver_pad == NULL) {
+      return;
+  }
   
   GstElement *sender_element = get_real_pad_parent (sender_pad);
   GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
@@ -113,16 +116,15 @@ do_push_buffer_pre (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, 
 static void
 do_push_buffer_list_pre (G_GNUC_UNUSED GObject *self, G_GNUC_UNUSED GstClockTime ts, GstPad *sender_pad, GstBufferList *list)
 {
-  if (GST_IS_GHOST_PAD (sender_pad))
+  if (sender_pad == NULL || GST_IS_GHOST_PAD (sender_pad))
     return;
   
   optional_init ();
   
   GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
-  if (GST_IS_GHOST_PAD (receiver_pad))
+  if (receiver_pad == NULL || GST_IS_GHOST_PAD (receiver_pad))
     return;
   receiver_pad = get_source_pad (receiver_pad);
-  
   sender_pad = get_source_pad (sender_pad);
   
   GstElement *sender_element = get_real_pad_parent (sender_pad);
@@ -246,11 +248,14 @@ do_push_buffer_post (G_GNUC_UNUSED GstTracer *self, G_GNUC_UNUSED guint64 ts, Gs
   optional_init ();
   
   GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
-  if (GST_IS_GHOST_PAD (receiver_pad))
+  if (receiver_pad == NULL || GST_IS_GHOST_PAD (receiver_pad))
     return;
   receiver_pad = get_source_pad (receiver_pad);
-  
   sender_pad = get_source_pad (sender_pad);
+
+  if (sender_pad == NULL || receiver_pad == NULL) {
+      return;
+  }
   
   GstElement *sender_element = get_real_pad_parent (sender_pad);
   GstElement *receiver_element = GST_PAD_PARENT (receiver_pad);
@@ -278,7 +283,7 @@ do_push_buffer_list_post (G_GNUC_UNUSED GstTracer *self, G_GNUC_UNUSED guint64 t
   optional_init ();
   
   GstPad *receiver_pad = GST_PAD_PEER (sender_pad);
-  if (GST_IS_GHOST_PAD (receiver_pad))
+  if (receiver_pad == NULL || GST_IS_GHOST_PAD (receiver_pad))
     return;
   receiver_pad = get_source_pad (receiver_pad);
   
@@ -308,7 +313,7 @@ static void
 do_push_event_pre (G_GNUC_UNUSED GstTracer *self, G_GNUC_UNUSED guint64 ts, GstPad *pad, G_GNUC_UNUSED GstEvent *ev)
 {
   optional_init ();
-  
+
   GstElement *element = get_real_pad_parent (pad);
   if (element) {
     GstPipeline *pipeline = trace_heir (element);
