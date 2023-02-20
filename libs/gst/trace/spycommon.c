@@ -64,7 +64,7 @@ current_monotonic_time ()
   return current_time - startup_time;
 }
 
-gpointer
+GstPipeline*
 trace_heir (GstElement *element)
 {
   GstObject *parent = NULL;
@@ -74,8 +74,12 @@ trace_heir (GstElement *element)
   }
   
   for (parent = GST_OBJECT (element); GST_OBJECT_PARENT (parent) != NULL; parent = GST_OBJECT_PARENT (parent));
-  
-  return parent;
+
+  if (GST_IS_PIPELINE(parent)) {
+      return GST_PIPELINE(parent);
+  } else {
+      return NULL;
+  }
 }
 
 GstPad *
@@ -98,6 +102,9 @@ GHashTable *pipeline_by_element = NULL;
 void
 dump_hierarchy_info_if_needed (GstTrace *trace, GstPipeline *pipeline, GstElement *new_element)
 {
+  g_return_if_fail(pipeline == NULL || GST_IS_PIPELINE(pipeline));
+  g_return_if_fail(new_element == NULL || GST_IS_ELEMENT(new_element));
+
   if (pipeline_by_element == NULL) {
     pipeline_by_element = g_hash_table_new (g_direct_hash, g_direct_equal);
   } else if (g_hash_table_lookup (pipeline_by_element, new_element)) {
